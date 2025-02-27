@@ -137,6 +137,6 @@ The Use Case Diagram illustrates how users interact with the AI-Powered Mock Int
 * Recording & Speech Processing → Users can record their answers via webcam/microphone, and the Speech-to-Text API converts spoken responses into text.
 * Interview Storage & Review → Responses are stored in PostgreSQL and can be viewed later on the dashboard.
 
-The diagram also shows dependencies (depends on) where functionalities rely on each other (e.g., recording depends on speech-to-text conversion) and extensions (extends) where features enhance existing use cases (e.g., AI-generated questions extend AI feedback).
+
 
 
