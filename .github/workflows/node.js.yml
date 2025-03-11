@@ -30,6 +30,14 @@ jobs:
       - name: Install Dependencies
         run: cd ai-interview-mocker && npm install  
 
+      - name: Set Environment Variables
+        run: |
+          echo "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${{ secrets.CLERK_PUBLISHABLE_KEY }}" >> $GITHUB_ENV
+          echo "CLERK_SECRET_KEY=${{ secrets.CLERK_SECRET_KEY }}" >> $GITHUB_ENV
+          echo "NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in" >> $GITHUB_ENV
+          echo "NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL=/" >> $GITHUB_ENV
+          echo "NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL=/" >> $GITHUB_ENV
+
       - name: Run Linter
         run: cd ai-interview-mocker && npm run lint  
 
