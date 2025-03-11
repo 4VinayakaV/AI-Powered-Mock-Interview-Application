@@ -5,35 +5,37 @@ name: Next.js CI
 
 on:
   push:
-    branches: 
-        - main
+    branches:
+      - main
   pull_request:
-    branches: 
-        - main
+    branches:
+      - main
 
 jobs:
   build-and-test:
-
     runs-on: ubuntu-latest
-
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
         with:
-          node-version: 18
+          fetch-depth: 0  
+
+      - name: List files for debugging
+        run: ls -R  
+
+      - name: Change to project directory
+        run: cd ai-interview-mocker && ls -R  
 
       - name: Install Dependencies
-        run: npm install
+        run: cd ai-interview-mocker && npm install  
 
       - name: Run Linter
-        run: npm run lint
+        run: cd ai-interview-mocker && npm run lint  
 
       - name: Run Tests
-        run: npm test
+        run: cd ai-interview-mocker && npm test  
 
       - name: Build Next.js App
-        run: npm run build
+        run: cd ai-interview-mocker && npm run build  
+
