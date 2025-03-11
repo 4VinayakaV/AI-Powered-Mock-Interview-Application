@@ -3,6 +3,6 @@ const nextConfig = {
     experimental: {}
      
     };
-    export default nextConfig;
-    // export default nextConfig;
+    //export default nextConfig;
+    module.exports = nextConfig
 
