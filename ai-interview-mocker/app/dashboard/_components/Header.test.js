@@ -92,23 +92,22 @@ describe("Header component", () => {
     expect(screen.getByText("UserButton")).toBeInTheDocument();
   });
 
-  test("wrapper div uses flex and bg-secondary classes", () => {
+  test("wrapper div uses correct layout and theme classes", () => {
     const { usePathname } = require("next/navigation");
     usePathname.mockReturnValue("/dashboard");
     render(<Header />);
     const wrapper = screen.getByText("DashBoard").closest("div");
-
     expect(wrapper).toHaveClass("flex", "bg-secondary", "shadow-md");
   });
 
-  test("component does not crash on unexpected pathname", () => {
+  test("component does not crash on unknown path", () => {
     const { usePathname } = require("next/navigation");
-    usePathname.mockReturnValue("/some/unknown/path");
+    usePathname.mockReturnValue("/random/path");
     render(<Header />);
-    expect(screen.getByText("DashBoard")).toBeInTheDocument(); // It still renders safely
+    expect(screen.getByText("DashBoard")).toBeInTheDocument();
   });
 
-  test("component renders without errors", () => {
+  test("component renders without any error", () => {
     const { usePathname } = require("next/navigation");
     usePathname.mockReturnValue("/dashboard");
     expect(() => render(<Header />)).not.toThrow();
