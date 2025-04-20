@@ -1,5 +1,4 @@
 # This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
 
 name: Next.js CI
 
@@ -37,6 +36,7 @@ jobs:
           echo "NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in" >> $GITHUB_ENV
           echo "NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL=/" >> $GITHUB_ENV
           echo "NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL=/" >> $GITHUB_ENV
+          echo "NEXT_PUBLIC_DRIZZLE_DB_URL=${{ secrets.DRIZZLE_DB_URL }}" >> $GITHUB_ENV  # ✅ Newly added line
 
       - name: Run Linter
         run: cd ai-interview-mocker && npm run lint  
@@ -46,4 +46,3 @@ jobs:
 
       - name: Build Next.js App
         run: cd ai-interview-mocker && npm run build  
-
