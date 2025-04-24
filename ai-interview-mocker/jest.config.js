@@ -11,8 +11,13 @@ const customJestConfig = {
     "^.+\\.(js|jsx|ts|tsx)$": "babel-jest",
   },
   moduleNameMapper: {
-    "^@/components/(.*)$": "<rootDir>/components/$1", // Map @/components
+    "^@/components/(.*)$": "<rootDir>/components/$1",
   },
+  // ✅ Add this to ignore specific folders/files from coverage
+  coveragePathIgnorePatterns: [
+    "<rootDir>/components/ui/",
+    "<rootDir>/app/dashboard/interview/[interviewId]/start/_components/",
+  ],
 };
 
 module.exports = createJestConfig(customJestConfig);

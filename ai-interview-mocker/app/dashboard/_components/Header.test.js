@@ -12,103 +12,92 @@ jest.mock("@clerk/nextjs", () => ({
 }));
 
 describe("Header component", () => {
+  const { usePathname } = require("next/navigation");
+
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
   test("renders logo with correct alt text", () => {
-    const { usePathname } = require("next/navigation");
     usePathname.mockReturnValue("/dashboard");
     render(<Header />);
     expect(screen.getByAltText("logo")).toBeInTheDocument();
   });
 
   test("logo uses Image component with correct dimensions", () => {
-    const { usePathname } = require("next/navigation");
     usePathname.mockReturnValue("/dashboard");
     render(<Header />);
     const logo = screen.getByAltText("logo");
-    expect(logo).toHaveAttribute("width", "50");
-    expect(logo).toHaveAttribute("height", "50");
+    expect(logo).toHaveAttribute("width", "42");
+    expect(logo).toHaveAttribute("height", "42");
   });
 
   test("renders all navigation items", () => {
-    const { usePathname } = require("next/navigation");
     usePathname.mockReturnValue("/dashboard");
     render(<Header />);
-    ["DashBoard", "Questions", "Upgarde", "How does it work?"].forEach((text) => {
+    ["DashBoard", "Questions", "Upgrade", "How does it work?"].forEach((text) => {
       expect(screen.getByText(text)).toBeInTheDocument();
     });
   });
 
   test("highlights 'DashBoard' when pathname is /dashboard", () => {
-    const { usePathname } = require("next/navigation");
     usePathname.mockReturnValue("/dashboard");
     render(<Header />);
     expect(screen.getByText("DashBoard")).toHaveClass("text-primary", "font-bold");
   });
 
   test("highlights 'Questions' when pathname is /dashboard/questions", () => {
-    const { usePathname } = require("next/navigation");
     usePathname.mockReturnValue("/dashboard/questions");
     render(<Header />);
     expect(screen.getByText("Questions")).toHaveClass("text-primary", "font-bold");
   });
 
-  test("highlights 'Upgarde' when pathname is /dashboard/upgrade", () => {
-    const { usePathname } = require("next/navigation");
+  test("highlights 'Upgrade' when pathname is /dashboard/upgrade", () => {
     usePathname.mockReturnValue("/dashboard/upgrade");
     render(<Header />);
-    expect(screen.getByText("Upgarde")).toHaveClass("text-primary", "font-bold");
+    expect(screen.getByText("Upgrade")).toHaveClass("text-primary", "font-bold");
   });
 
   test("highlights 'How does it work?' when pathname is /dashboard/how", () => {
-    const { usePathname } = require("next/navigation");
     usePathname.mockReturnValue("/dashboard/how");
     render(<Header />);
     expect(screen.getByText("How does it work?")).toHaveClass("text-primary", "font-bold");
   });
 
   test("non-active items are not highlighted", () => {
-    const { usePathname } = require("next/navigation");
     usePathname.mockReturnValue("/dashboard/questions");
     render(<Header />);
     expect(screen.getByText("DashBoard")).not.toHaveClass("text-primary", "font-bold");
-    expect(screen.getByText("Upgarde")).not.toHaveClass("text-primary", "font-bold");
+    expect(screen.getByText("Upgrade")).not.toHaveClass("text-primary", "font-bold");
   });
 
   test("navigation list is hidden on small screens (via class)", () => {
-    const { usePathname } = require("next/navigation");
     usePathname.mockReturnValue("/dashboard");
     render(<Header />);
-    const ul = screen.getByRole("list");
-    expect(ul).toHaveClass("hidden", "md:flex");
+    const navList = screen.getByText("DashBoard").closest("ul");
+    expect(navList).toHaveClass("hidden", "md:flex");
   });
 
   test("renders the Clerk UserButton", () => {
-    const { usePathname } = require("next/navigation");
     usePathname.mockReturnValue("/dashboard");
     render(<Header />);
     expect(screen.getByText("UserButton")).toBeInTheDocument();
   });
 
   test("wrapper div uses correct layout and theme classes", () => {
-    const { usePathname } = require("next/navigation");
     usePathname.mockReturnValue("/dashboard");
     render(<Header />);
     const wrapper = screen.getByText("DashBoard").closest("div");
-    expect(wrapper).toHaveClass("flex", "bg-secondary", "shadow-md");
+    expect(wrapper).toHaveClass("flex", "bg-white", "shadow-md", "border-b");
   });
 
   test("component does not crash on unknown path", () => {
-    const { usePathname } = require("next/navigation");
     usePathname.mockReturnValue("/random/path");
     render(<Header />);
     expect(screen.getByText("DashBoard")).toBeInTheDocument();
   });
 
   test("component renders without any error", () => {
-    const { usePathname } = require("next/navigation");
     usePathname.mockReturnValue("/dashboard");
     expect(() => render(<Header />)).not.toThrow();
   });

@@ -67,7 +67,7 @@ function Interview({params}) {
 )}
         </div>  
       <div className='flex justify-end items-end'>
-        <Link href={'/dashboard/interview/${interviewData?.mockId}/start'}>
+        <Link href={`/dashboard/interview/${interviewData?.mockId}/start`}>
         <Button >Start Interview</Button>
         </Link>
         
