@@ -32,49 +32,31 @@ describe("Header component", () => {
     expect(logo).toHaveAttribute("height", "42");
   });
 
-  test("renders all navigation items", () => {
+  test("renders only active navigation items", () => {
     usePathname.mockReturnValue("/dashboard");
     render(<Header />);
-    ["DashBoard", "Questions", "Upgrade", "How does it work?"].forEach((text) => {
-      expect(screen.getByText(text)).toBeInTheDocument();
-    });
+    expect(screen.getByText("Dashboard")).toBeInTheDocument();
+    expect(screen.queryByText("Questions")).not.toBeInTheDocument();
+    expect(screen.queryByText("Upgrade")).not.toBeInTheDocument();
+    expect(screen.queryByText("How does it work?")).not.toBeInTheDocument();
   });
 
-  test("highlights 'DashBoard' when pathname is /dashboard", () => {
+  test("highlights 'Dashboard' when pathname is /dashboard", () => {
     usePathname.mockReturnValue("/dashboard");
     render(<Header />);
-    expect(screen.getByText("DashBoard")).toHaveClass("text-primary", "font-bold");
-  });
-
-  test("highlights 'Questions' when pathname is /dashboard/questions", () => {
-    usePathname.mockReturnValue("/dashboard/questions");
-    render(<Header />);
-    expect(screen.getByText("Questions")).toHaveClass("text-primary", "font-bold");
-  });
-
-  test("highlights 'Upgrade' when pathname is /dashboard/upgrade", () => {
-    usePathname.mockReturnValue("/dashboard/upgrade");
-    render(<Header />);
-    expect(screen.getByText("Upgrade")).toHaveClass("text-primary", "font-bold");
-  });
-
-  test("highlights 'How does it work?' when pathname is /dashboard/how", () => {
-    usePathname.mockReturnValue("/dashboard/how");
-    render(<Header />);
-    expect(screen.getByText("How does it work?")).toHaveClass("text-primary", "font-bold");
+    expect(screen.getByText("Dashboard")).toHaveClass("bg-teal-50", "text-teal-700");
   });
 
   test("non-active items are not highlighted", () => {
-    usePathname.mockReturnValue("/dashboard/questions");
+    usePathname.mockReturnValue("/random/path");
     render(<Header />);
-    expect(screen.getByText("DashBoard")).not.toHaveClass("text-primary", "font-bold");
-    expect(screen.getByText("Upgrade")).not.toHaveClass("text-primary", "font-bold");
+    expect(screen.getByText("Dashboard")).not.toHaveClass("bg-teal-50", "text-teal-700");
   });
 
   test("navigation list is hidden on small screens (via class)", () => {
     usePathname.mockReturnValue("/dashboard");
     render(<Header />);
-    const navList = screen.getByText("DashBoard").closest("ul");
+    const navList = screen.getByText("Dashboard").closest("ul");
     expect(navList).toHaveClass("hidden", "md:flex");
   });
 
@@ -87,14 +69,14 @@ describe("Header component", () => {
   test("wrapper div uses correct layout and theme classes", () => {
     usePathname.mockReturnValue("/dashboard");
     render(<Header />);
-    const wrapper = screen.getByText("DashBoard").closest("div");
-    expect(wrapper).toHaveClass("flex", "bg-white", "shadow-md", "border-b");
+    const wrapper = screen.getByText("Dashboard").closest("div");
+    expect(wrapper).toHaveClass("flex", "bg-white/95", "shadow-sm", "border-b");
   });
 
   test("component does not crash on unknown path", () => {
     usePathname.mockReturnValue("/random/path");
     render(<Header />);
-    expect(screen.getByText("DashBoard")).toBeInTheDocument();
+    expect(screen.getByText("Dashboard")).toBeInTheDocument();
   });
 
   test("component renders without any error", () => {

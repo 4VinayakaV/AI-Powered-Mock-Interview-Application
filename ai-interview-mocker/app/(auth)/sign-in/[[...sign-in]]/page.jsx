@@ -1,17 +1,42 @@
 import { SignIn } from '@clerk/nextjs';
+import styles from './sign-in.module.css';
 
 export default function Page() {
   return (
-    <div
-      className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black px-4"
-    >
-      <div className="text-center absolute top-10">
-        <h1 className="text-4xl font-extrabold text-white mb-2">AI Interviewer</h1>
-        <p className="text-gray-300 text-lg">Your smart mock interview partner</p>
+    <main className={styles.signInPage}>
+      <section className={styles.brandPanel}>
+        <div>
+          <h1>AI Interviewer</h1>
+          <p className={styles.tagline}>
+            Practice interviews, record answers, and get focused feedback before the real conversation.
+          </p>
+        </div>
+        <div className={styles.featureList} aria-label="Product highlights">
+          <span>Role-based questions</span>
+          <span>Voice answer practice</span>
+          <span>AI feedback reports</span>
+        </div>
+      </section>
+
+      <div className={styles.authPanel}>
+        <div className={styles.authHeader}>
+          <h2>Welcome back</h2>
+          <p>Sign in to continue to your interview dashboard.</p>
+        </div>
+        <SignIn
+          appearance={{
+            elements: {
+              rootBox: styles.clerkRoot,
+              cardBox: styles.clerkCard,
+              headerTitle: styles.clerkHidden,
+              headerSubtitle: styles.clerkHidden,
+              socialButtonsBlockButton: styles.socialButton,
+              formButtonPrimary: styles.primaryButton,
+              footerActionLink: styles.footerLink,
+            },
+          }}
+        />
       </div>
-      <div className="shadow-xl rounded-xl p-8 bg-white/90 backdrop-blur-md">
-        <SignIn />
-      </div>
-    </div>
+    </main>
   );
 }

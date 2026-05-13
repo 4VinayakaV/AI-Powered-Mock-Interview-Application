@@ -3,23 +3,26 @@ import React from 'react'
 
 function QuestionsSection({mockInterviewQuestion, activeQuestionIndex}) {
   return mockInterviewQuestion&&(
-    <div className='p-5 border rounded-lg my-10'>
-      <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5'>
+    <section className='rounded-2xl border bg-white p-5 shadow-sm sm:p-6'>
+      <div className='grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5'>
         {mockInterviewQuestion&&mockInterviewQuestion.map((question,index)=>(
-            <h2 className={`p-2 border rounded-full
-            text-xs md:text-sm text-center cursor-pointer
-            ${activeQuestionIndex==index&&' bg-primary text-white'}`}>Question #{index+1}</h2>
+            <h2 key={question?.question || index} className={`rounded-full border px-3 py-2
+            text-center text-xs font-semibold md:text-sm
+            ${activeQuestionIndex==index ? 'border-teal-700 bg-teal-700 text-white' : 'border-slate-200 bg-slate-50 text-slate-600'}`}>Question #{index+1}</h2>
         ))}
       </div>
-      <h2 className='my-5 text-md md:text-lg'>{mockInterviewQuestion[activeQuestionIndex]?.question}</h2>
-      <div className='border rounded-lg p-5 bg-blue-100 mt-20'>
-        <h2 className='flex gap-2 items-center text-primary'>
-           <Lightbulb/>
+      <div className='mt-6 rounded-xl border bg-slate-50 p-5'>
+        <p className='text-xs font-semibold uppercase tracking-wide text-slate-500'>Current question</p>
+        <h2 className='mt-2 text-lg font-bold leading-7 text-slate-950 md:text-xl'>{mockInterviewQuestion[activeQuestionIndex]?.question}</h2>
+      </div>
+      <div className='mt-5 rounded-xl border border-blue-200 bg-blue-50 p-5'>
+        <h2 className='flex gap-2 items-center text-blue-900'>
+           <Lightbulb className='h-5 w-5'/>
            <strong>Note: </strong> 
         </h2>
-        <h2 className='text-sm text-primary my-2'>Click on Record Answer when you want to answer the question. At the end of interview we will give you the feedback along with correct answer for each of question and your answer to compre it.</h2>
+        <p className='my-2 text-sm leading-6 text-blue-900'>Click Record Answer when you are ready. After the interview, you will receive feedback, the sample answer, and your recorded answer for comparison.</p>
       </div>
-    </div>
+    </section>
   )
 }
 

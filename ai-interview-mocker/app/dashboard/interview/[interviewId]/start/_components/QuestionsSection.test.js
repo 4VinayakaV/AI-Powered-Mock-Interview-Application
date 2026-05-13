@@ -43,7 +43,7 @@ describe("QuestionsSection Component", () => {
     );
 
     const active = screen.getByText("Question #2");
-    expect(active).toHaveClass("bg-primary", "text-white");
+    expect(active).toHaveClass("bg-teal-700", "text-white");
   });
 
   test("displays the active question text", () => {
@@ -67,7 +67,7 @@ describe("QuestionsSection Component", () => {
 
     expect(screen.getByText("Note:")).toBeInTheDocument();
     expect(
-      screen.getByText(/Click on Record Answer when you want to answer the question/i)
+      screen.getByText(/Click Record Answer when you are ready/i)
     ).toBeInTheDocument();
   });
 });

@@ -1,22 +1,16 @@
 "use client"
 import { Button } from '@/components/ui/button'
 import Image from 'next/image'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import Webcam from 'react-webcam'
 import useSpeechToText from 'react-hook-speech-to-text';
-import { Mic, Ratio } from 'lucide-react'
+import { Mic, Video } from 'lucide-react'
 import { toast } from 'sonner'
-import { chatSession } from '@/utils/GeminiAIModal'
-import { Antic_Slab } from 'next/font/google'
-import { db } from '@/utils/db'
-import moment from 'moment/moment'
-import { useUser } from '@clerk/nextjs'
-import { UserAnswer } from '@/utils/schema'
 
 function RecordAnswerSection({mockInterviewQuestion,activeQuestionIndex,interviewData}) {
     const [userAnswer, setUserAnswer] = useState('');
-    const {user}=useUser(); 
     const [loading,setLoading] = useState(false);
+    const hasSavedAnswer = useRef(false);
     const {
         error,
         interimResult, 
@@ -31,16 +25,27 @@ function RecordAnswerSection({mockInterviewQuestion,activeQuestionIndex,intervie
       });
 
       useEffect(()=>{
-        results.map((result)=>(
-            setUserAnswer(prevAns=>prevAns+result?.transcript)
-        ))
+        const transcript = results
+          .map((result) => result?.transcript)
+          .filter(Boolean)
+          .join(' ')
+          .trim();
+
+        setUserAnswer(transcript);
       },[results])
 
       useEffect(()=>{
-        if(!isRecording&&userAnswer.length>10){
-            UpdateUserAnswer();
+        hasSavedAnswer.current = false;
+        setUserAnswer('');
+        setResults([]);
+      },[activeQuestionIndex, setResults])
+
+      useEffect(()=>{
+        if(!isRecording && userAnswer.trim().length > 10 && !loading && !hasSavedAnswer.current){
+            hasSavedAnswer.current = true;
+            UpdateUserAnswer(userAnswer.trim());
         }
-      },[userAnswer])
+      },[isRecording, userAnswer, loading])
 
       const StartStopRecording=async()=>{
         if (isRecording){
@@ -49,69 +54,90 @@ function RecordAnswerSection({mockInterviewQuestion,activeQuestionIndex,intervie
             
         }
         else{
+            hasSavedAnswer.current = false;
+            setUserAnswer('');
+            setResults([]);
             startSpeechToText();
         }
       }
-      const UpdateUserAnswer=async()=>{
+      const UpdateUserAnswer=async(answerText)=>{
         setLoading(true);
-        const feedbackPromt="Question: "+mockInterviewQuestion[activeQuestionIndex]?.question+
-            ", User Answer: "+userAnswer+", Depends on question and user answer for the given interview question"+
-            "please give us rating for answer and feedback for area of improvement if any"+
-            "in just 3 to 5 lines to improve it in JSON format with rating field and feedback field";
+        try {
+            const response = await fetch('/api/answers', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    mockId: interviewData?.mockId,
+                    question: mockInterviewQuestion[activeQuestionIndex]?.question,
+                    correctAns: mockInterviewQuestion[activeQuestionIndex]?.answer,
+                    userAns: answerText,
+                }),
+            });
+            const data = await response.json();
 
-            const result=await chatSession.sendMessage(feedbackPromt);
-            const mockJsonResp=(result.response.text()).replace('```json', '').replace('```','')
-
-            console.log(mockJsonResp);
-            const JsonFeedbackResp=JSON.parse(mockJsonResp);
-
-            const resp = await db.insert(UserAnswer)
-            .values({
-                mockIdRef:interviewData?.mockId,
-                question:mockInterviewQuestion[activeQuestionIndex]?.question,
-                correctAns:mockInterviewQuestion[activeQuestionIndex]?.answer,
-                userAns:userAnswer,
-                feedback:JsonFeedbackResp?.feedback,
-                rating:JsonFeedbackResp?.rating,
-                userEmail:user?.primary?.primaryEmailAddress?.emailAddress,
-                createdAt: moment().format('MM-DD-yyyy')
-            })
-
-            if(resp){
-                toast('User Answer recorded successfully');
-                setUserAnswer('');
-                setResults([]);
+            if (!response.ok) {
+                throw new Error(data?.error || 'Unable to save answer feedback.');
             }
+
+            toast('User Answer recorded successfully');
+            setUserAnswer('');
             setResults([]);
+        } catch (error) {
+            console.error('Error saving answer feedback:', error);
+            toast(error.message || 'Unable to save answer feedback.');
+            hasSavedAnswer.current = false;
+        } finally {
             setLoading(false);
+        }
 
       }
 
   return (
-    <div className='flex item-center justify-center flex-col'>
-    <div className='flex flex-col my-20 justify-center items-center bg-black rounded-lg p-5'>
-        <Image src={'/webcam.png'} width={200} height={200}
-        className= 'absolute'/>
+    <section className='rounded-2xl border bg-white p-5 shadow-sm sm:p-6'>
+      <div className='mb-4 flex items-center justify-between gap-3'>
+        <div>
+          <h2 className='text-lg font-bold text-slate-900'>Answer recorder</h2>
+          <p className='text-sm text-slate-500'>Record one answer per question.</p>
+        </div>
+        <div className={`rounded-full px-3 py-1 text-xs font-semibold ${isRecording ? 'bg-red-50 text-red-700' : 'bg-slate-100 text-slate-600'}`}>
+          {isRecording ? 'Recording' : 'Ready'}
+        </div>
+      </div>
+    <div className='relative flex aspect-video w-full items-center justify-center overflow-hidden rounded-xl bg-slate-950 p-5'>
+        <Image src={'/webcam.png'} width={200} height={200} alt="Webcam placeholder"
+        className= 'absolute opacity-70'/>
       <Webcam
       mirrored={true}
-      style={{
-        height:300,
-        width:'100%',
-        zIndex:10,
-      }}
+      className='relative z-10 h-full w-full rounded-lg object-cover'
       />
       </div>
-      <Button variant="outline" className="my-10"
+      <Button variant={isRecording ? "destructive" : "outline"} className="mt-5 w-full"
       onClick={StartStopRecording}
+      disabled={loading}
       >
-        {isRecording?
-        <h2 className='text-red-500 flex gap-2'>
+        {loading ? (
+          'Saving answer...'
+        ) : isRecording ? (
+          <span className='flex gap-2'>
             <Mic/>Stop Recording
-        </h2>
-        :
-        'Record Answer'}</Button>
+          </span>
+        ) : (
+          <span className='flex items-center gap-2'>
+            <Video className='h-4 w-4' />
+            Record Answer
+          </span>
+        )}
+      </Button>
+      {userAnswer && (
+        <div className='mt-4 rounded-xl border bg-slate-50 p-4'>
+          <p className='text-xs font-semibold uppercase tracking-wide text-slate-500'>Transcript</p>
+          <p className='mt-2 text-sm leading-6 text-slate-700'>{userAnswer}</p>
+        </div>
+      )}
 
-    </div> 
+    </section> 
   )
 }
 

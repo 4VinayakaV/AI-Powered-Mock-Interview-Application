@@ -9,47 +9,30 @@ jest.mock("./InterviewItemCard", () => ({
   ),
 }));
 
-// Mock Clerk useUser
-jest.mock("@clerk/nextjs", () => ({
-  useUser: () => ({
-    user: {
-      primaryEmailAddress: { emailAddress: "test@example.com" },
-    },
-  }),
-}));
-
-// Dynamically mocked DB response
 const mockData = [
-  { id: 1, jobPosition: "Frontend Developer" },
-  { id: 2, jobPosition: "Backend Developer" },
-  { id: 3, jobPosition: "Full Stack Developer" }, // Add as many as you'd like
+  { id: 1, mockId: "mock-1", jobPosition: "Frontend Developer" },
+  { id: 2, mockId: "mock-2", jobPosition: "Backend Developer" },
+  { id: 3, mockId: "mock-3", jobPosition: "Full Stack Developer" },
 ];
 
-jest.mock("../../../utils/db", () => ({
-  db: {
-    select: () => ({
-      from: () => ({
-        where: () => ({
-          orderBy: () => Promise.resolve(mockData),
-        }),
-      }),
-    }),
-  },
-}));
-
-jest.mock("../../../utils/schema", () => ({
-  MockInterview: {
-    createdBy: "createdBy",
-    id: "id",
-  },
-}));
-
 describe("InterviewList Component", () => {
-  test("renders heading", () => {
+  beforeEach(() => {
+    global.fetch = jest.fn(() =>
+      Promise.resolve({
+        ok: true,
+        text: () => Promise.resolve(JSON.stringify({ interviews: mockData })),
+      })
+    );
+  });
+
+  test("renders heading", async () => {
     render(<InterviewList />);
     expect(
       screen.getByText("Previous Mock Interviews")
     ).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText("Frontend Developer")).toBeInTheDocument();
+    });
   });
 
   test("renders all fetched interview cards", async () => {

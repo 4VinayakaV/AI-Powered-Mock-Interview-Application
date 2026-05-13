@@ -7,21 +7,15 @@ jest.mock("@clerk/nextjs", () => ({
 }));
 
 describe("SignIn Page", () => {
-  test("renders the heading and subheading", () => {
+  test("renders the branded sign-in content", () => {
     render(<Page />);
     expect(screen.getByText("AI Interviewer")).toBeInTheDocument();
-    expect(screen.getByText("Your smart mock interview partner")).toBeInTheDocument();
+    expect(screen.getByText("Welcome back")).toBeInTheDocument();
+    expect(screen.getByText("Sign in to continue to your interview dashboard.")).toBeInTheDocument();
   });
 
   test("renders the mocked SignIn component", () => {
     render(<Page />);
     expect(screen.getByTestId("mock-signin")).toBeInTheDocument();
-  });
-
-  test("has correct outer layout classes", () => {
-    render(<Page />);
-    // Traverse up to the outermost wrapper
-    const outerWrapper = screen.getByTestId("mock-signin").parentElement?.parentElement;
-    expect(outerWrapper).toHaveClass("flex", "items-center", "justify-center", "min-h-screen");
   });
 });
